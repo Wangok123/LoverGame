@@ -1,4 +1,5 @@
-﻿using strange.extensions.context.impl;
+﻿using strange.extensions.context.api;
+using strange.extensions.context.impl;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,11 +7,18 @@ using UnityEngine.UI;
 
 public class GameRoot : ContextView
 {
-    public Text text;
+    
+    
+    private static GameRoot _instance;
 
     void Awake()
     {
         DontDestroyOnLoad(this.gameObject);
-        this.context = new GameContext(this);        
+        Init();    
+    }
+
+    void Init()
+    {
+        this.context = new GameContext(this);
     }
 }
