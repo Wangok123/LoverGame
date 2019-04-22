@@ -5,9 +5,12 @@ using UnityEngine;
 
 public class UIManager : Singleton<UIManager> {
 
-    Dictionary<View, GameObject> openUIs = new Dictionary<View, GameObject>();
-    Dictionary<string, string> panelPathDic = JsonTools.ReadPanelPath(Application.dataPath + "/PanelPath.json");
+    Dictionary<string, GameObject> openUIs = new Dictionary<string, GameObject>();
+    Dictionary<string, string> panelPathDic = null;
     Transform uiParent = null;
+    Transform downCanvas = null;
+    Transform middleCanvas = null;
+    Transform upCanvas = null;
 
     //UI节点
     Transform UIParent
@@ -23,35 +26,80 @@ public class UIManager : Singleton<UIManager> {
         }
     }
 
+    //缓存三个画布
+    Transform DownCanvas
+    {
+        get
+        {
+            if (downCanvas == null)
+            {
+                GameObject go = GameObject.FindWithTag("DownCanvas");
+                downCanvas = go.transform;
+            }
+            return downCanvas;
+        }
+    }
+
+    Transform MiddleCanvas
+    {
+        get
+        {
+            if (middleCanvas == null)
+            {
+                GameObject go = GameObject.FindWithTag("MiddleCanvas");
+                middleCanvas = go.transform;
+            }
+            return middleCanvas;
+        }
+    }
+
+    Transform UpCanvas
+    {
+        get
+        {
+            if (downCanvas == null)
+            {
+                GameObject go = GameObject.FindWithTag("DownCanvas");
+                downCanvas = go.transform;
+            }
+            return downCanvas;
+        }
+    }
+
+    private void Awake()
+    {
+        panelPathDic = JsonTools.ReadPanelPath(Application.dataPath + "/PanelPath.json");
+    }
+
     /// <summary>
     /// 打开UI
     /// </summary>
     /// <param name="panelName"></param>
-    public void CreateUI(View panelName)
+    public void CreateUI<T>()where T:View
     {
-        if (openUIs.ContainsKey(panelName))
+        if (openUIs.ContainsKey(typeof(T).Name))
             return;
 
-        GameObject go = GameObject.Instantiate(Resources.Load(panelName.name)) as GameObject;
+        GameObject go = GameObject.Instantiate(Resources.Load(panelPathDic[typeof(T).Name])) as GameObject;
 
         if (!go)
-            Debug.LogError("UIManager : Cant find " + panelName.name);
+            Debug.LogError("UIManager : Cant find " + typeof(T).Name);
 
-        go.transform.SetParent(UIParent);
+        go.transform.SetParent(MiddleCanvas,false);//暂时使用直接放在中层的方式
         go.transform.localPosition = Vector3.zero;
         go.transform.localScale = Vector3.one;
-        openUIs[panelName] = go;
+        openUIs[typeof(T).Name] = go;
     }
 
     /// <summary>
     /// 关闭UI
     /// </summary>
     /// <param name="panelName"></param>
-    public void CloseUI(View panelName)
+    public void CloseUI<T>()
     {
-        if (!openUIs.ContainsKey(panelName))
+        if (!openUIs.ContainsKey(typeof(T).Name))
             return;
-        Destroy(openUIs[panelName]);
-        openUIs.Remove(panelName);
+        Destroy(openUIs[typeof(T).Name]);
+        openUIs.Remove(typeof(T).Name);
     }
 }

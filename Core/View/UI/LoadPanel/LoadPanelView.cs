@@ -6,7 +6,8 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class LoadPanelView : View
-{
+{ 
+
     //显示进度的文本
     public Text progress;
     //进度条的数值

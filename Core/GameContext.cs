@@ -42,6 +42,7 @@ public class GameContext : MVCSContext
         #endregion
 
         #region CommandBind
+        commandBinder.Bind<ChangeSceneSignal>().To<ChangeSceneCommand>();
         #endregion
 
 
